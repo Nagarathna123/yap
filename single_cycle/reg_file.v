@@ -4,7 +4,7 @@
 `define REGISTER_COUNT 32
 `define REGISTER_WIDTH 32
 //4 bits required to address 32 registers
-`define REG_INDEX_WIDTH 4
+`define REG_INDEX_WIDTH 5
 
 module reg_file(
 	//output for two register operands (two read ports)

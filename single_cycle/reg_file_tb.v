@@ -6,9 +6,9 @@ module reg_file_tb;
 	reg rst;
 	reg wr_en;
 	reg clk;
-	reg [3:0] rd_reg_index_1;
-	reg [3:0] rd_reg_index_2;
-	reg [3:0] wr_reg_index;
+	reg [4:0] rd_reg_index_1;
+	reg [4:0] rd_reg_index_2;
+	reg [4:0] wr_reg_index;
 	reg [31:0] wr_reg_data;
 
 	// Outputs
