@@ -1,19 +1,22 @@
 `timescale 1ns / 1ps
 
+//Include header file
+`include "reg_file.h"
+
 module reg_file_tb;
 
 	// Inputs
 	reg rst;
 	reg wr_en;
 	reg clk;
-	reg [4:0] rd_reg_index_1;
-	reg [4:0] rd_reg_index_2;
-	reg [4:0] wr_reg_index;
-	reg [31:0] wr_reg_data;
+	reg [(`REG_INDEX_WIDTH-1):0] rd_reg_index_1;
+	reg [(`REG_INDEX_WIDTH-1):0] rd_reg_index_2;
+	reg [(`REG_INDEX_WIDTH-1):0] wr_reg_index;
+	reg [(`REGISTER_WIDTH-1):0] wr_reg_data;
 
 	// Outputs
-	wire [31:0] reg_data_1;
-	wire [31:0] reg_data_2;
+	wire [(`REGISTER_WIDTH-1):0] reg_data_1;
+	wire [(`REGISTER_WIDTH-1):0] reg_data_2;
 
 	// Instantiate the Unit Under Test (UUT)
 	reg_file uut (
