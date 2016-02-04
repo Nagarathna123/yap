@@ -1,7 +1,10 @@
 `timescale 1ns / 1ps
 
-//Include header
-`include "sz_ex.h"
+//macros
+//instruction width
+`define INSTRUCTION_WIDTH 32
+//operand width
+`define OPERAND_WIDTH 32
 
 module sz_ex_tb;
 

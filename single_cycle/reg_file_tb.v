@@ -1,7 +1,11 @@
 `timescale 1ns / 1ps
 
-//Include header file
-`include "reg_file.h"
+//macros
+//Register file properties
+`define REGISTER_COUNT 32
+`define REGISTER_WIDTH 32
+//5 bits required to address 32 registers
+`define REG_INDEX_WIDTH 5
 
 module reg_file_tb;
 

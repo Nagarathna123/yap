@@ -1,7 +1,10 @@
 //sign and zero extend
 
-//Include header
-`include "sz_ex.h"
+//macros
+//instruction width
+`define INSTRUCTION_WIDTH 32
+//operand width
+`define OPERAND_WIDTH 32
 
 //macros for zero and sign extend arguments
 `define ZERO_EXTEND 1'b0
@@ -61,87 +64,87 @@ module sz_ex(
 			//determine the type of instruction
 			case (inst[6:2])
 			
-			//I-type
-			`JALR: begin
-				//perform sign extend
-				sz_ex_val = sz_ex_12_to_32(inst[31:20],`SIGN_EXTEND);				
-			end
-			
-			`LOAD: begin
-				//perform zero or sign extend based on the value of bit 14
-				//if bit 14 is 0 perform sign extend, else zero extend
-				//use !(bit 14)
-				sz_ex_val = sz_ex_12_to_32(inst[31:20],!inst[14]);
-			end
-			
-			`ALU: begin
-				//handle SHIFT instruction immediate values separately
-				//SLLI, SRLI and SRAI
-				if(inst[14:12] == 3'b001 || inst[14:12] == 3'b101) begin
-					//set the output to the unsigned shift amount
-					sz_ex_val[4:0] = inst[24:20];
-					sz_ex_val[31:5] = {(`OPERAND_WIDTH-5){1'b0}};
+				//I-type
+				`JALR: begin
+					//perform sign extend
+					sz_ex_val = sz_ex_12_to_32(inst[31:20],`SIGN_EXTEND);				
 				end
 				
-				//handle remaining ALU instructions
-				else begin
-					//perform zero extension only for SLTIU
-					if(inst[14:12] == 3'b011) begin
-						sz_ex_val = sz_ex_12_to_32(inst[31:20], `ZERO_EXTEND);
+				`LOAD: begin
+					//perform zero or sign extend based on the value of bit 14
+					//if bit 14 is 0 perform sign extend, else zero extend
+					//use !(bit 14)
+					sz_ex_val = sz_ex_12_to_32(inst[31:20],!inst[14]);
+				end
+				
+				`ALU: begin
+					//handle SHIFT instruction immediate values separately
+					//SLLI, SRLI and SRAI
+					if(inst[14:12] == 3'b001 || inst[14:12] == 3'b101) begin
+						//set the output to the unsigned shift amount
+						sz_ex_val[4:0] = inst[24:20];
+						sz_ex_val[31:5] = {(`OPERAND_WIDTH-5){1'b0}};
+					end
+					
+					//handle remaining ALU instructions
+					else begin
+						//perform zero extension only for SLTIU
+						if(inst[14:12] == 3'b011) begin
+							sz_ex_val = sz_ex_12_to_32(inst[31:20], `ZERO_EXTEND);
+						end
+						
+						//else perform sign extend
+						else begin
+							sz_ex_val = sz_ex_12_to_32(inst[31:20], `SIGN_EXTEND);
+						end
+					end
+				end
+				
+				`STORE: begin
+					//perform sign extend
+					sz_ex_val = sz_ex_12_to_32({inst[31:25],inst[11:7]}, `SIGN_EXTEND);
+				end
+				
+				`BRANCH: begin
+					//perform zero extend for BLTU and BGEU
+					//(bits 13 and 14 are both 1 for BLTU and BGEU)
+					//the immediate offset is specified as multiples of two bytes 
+					if(inst[14:13] == 2'b11) begin
+						sz_ex_val[0] = 1'b0;
+						sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:6]};
+						sz_ex_val[31:13] = {(`OPERAND_WIDTH-13){1'b0}};
 					end
 					
 					//else perform sign extend
 					else begin
-						sz_ex_val = sz_ex_12_to_32(inst[31:20], `SIGN_EXTEND);
+						sz_ex_val[0] = 1'b0;
+						sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:6]};
+						sz_ex_val[31:13] = {(`OPERAND_WIDTH-13){inst[31]}};
 					end
 				end
-			end
-			
-			`STORE: begin
-				//perform sign extend
-				sz_ex_val = sz_ex_12_to_32({inst[31:25],inst[11:7]}, `SIGN_EXTEND);
-			end
-			
-			`BRANCH: begin
-				//perform zero extend for BLTU and BGEU
-				//(bits 13 and 14 are both 1 for BLTU and BGEU)
-				//the immediate offset is specified as multiples of two bytes 
-				if(inst[14:13] == 2'b11) begin
-					sz_ex_val[0] = 1'b0;
-					sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:6]};
-					sz_ex_val[31:13] = {(`OPERAND_WIDTH-13){1'b0}};
+				
+				`U_TYPE: begin
+					//copy the 20 bit immediate to the MSB 20 bits of the output
+					//fill the remaining LSB bits with zeros
+					//handles immediate values for LUI and AUIPC
+					sz_ex_val[31:12] = inst[31:12];
+					sz_ex_val[11:0] = {(`OPERAND_WIDTH-20){1'b0}};
 				end
 				
-				//else perform sign extend
-				else begin
+				`JAL: begin
+					//offset is a multiple of two bytes
+					//Therefore, least significant bit of output is zero
+					//subsequent 20 bits represent the immediate value
+					//immediate is sign extended
 					sz_ex_val[0] = 1'b0;
-					sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:6]};
-					sz_ex_val[31:13] = {(`OPERAND_WIDTH-13){inst[31]}};
+					sz_ex_val[20:1] = {inst[31], inst[19:12], inst[20], inst[30:21]};
+					sz_ex_val[31:21] = {(`OPERAND_WIDTH-21){inst[31]}};
 				end
-			end
-			
-			`U_TYPE: begin
-				//copy the 20 bit immediate to the MSB 20 bits of the output
-				//fill the remaining LSB bits with zeros
-				//handles immediate values for LUI and AUIPC
-				sz_ex_val[31:12] = inst[31:12];
-				sz_ex_val[11:0] = {(`OPERAND_WIDTH-20){1'b0}};
-			end
-			
-			`JAL: begin
-				//offset is a multiple of two bytes
-				//Therefore, least significant bit of output is zero
-				//subsequent 20 bits represent the immediate value
-				//immediate is sign extended
-				sz_ex_val[0] = 1'b0;
-				sz_ex_val[20:1] = {inst[31], inst[19:12], inst[20], inst[30:21]};
-				sz_ex_val[31:21] = {(`OPERAND_WIDTH-21){inst[31]}};
-			end
-			 
-			default: begin
-				//set output to defult value (0)
-				sz_ex_val = {`OPERAND_WIDTH{1'b0}};
-			end
+				 
+				default: begin
+					//set output to defult value (0)
+					sz_ex_val = {`OPERAND_WIDTH{1'b0}};
+				end
 			
 			endcase
 			
