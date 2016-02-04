@@ -58,11 +58,17 @@ module ctrl(
 				
 				default: begin
 					//set all signals to default value (0)
-					alu_ctrl = {(`ALU_CTRL_WIDTH-1){1'b0}};
+					//ALU control signal
+					alu_ctrl = {(`ALU_CTRL_WIDTH){1'b0}};
+					//Register file write enable signal
 					reg_file_wr_en = 1'b0;
+					//Register file writeback select signal
 					reg_file_wr_back_sel = 1'b0;
+					//ALU operand select signal
 					alu_op2_sel = 1'b0;
+					//Data memory read enable signal
 					data_mem_rd_en = 1'b0;
+					//Data memory write enalbe signal
 					data_mem_wr_en = 1'b0;
 				end
 			
@@ -71,11 +77,17 @@ module ctrl(
 		
 		else begin
 			//set all signals to default value (0)
-			alu_ctrl = {(`ALU_CTRL_WIDTH-1){1'b0}};
+			//ALU control signal
+			alu_ctrl = {(`ALU_CTRL_WIDTH){1'b0}};
+			//Register file write enable signal
 			reg_file_wr_en = 1'b0;
+			//Register file writeback select signal
 			reg_file_wr_back_sel = 1'b0;
+			//ALU operand select signal
 			alu_op2_sel = 1'b0;
+			//Data memory read enable signal
 			data_mem_rd_en = 1'b0;
+			//Data memory write enalbe signal
 			data_mem_wr_en = 1'b0;
 		end
 	end
