@@ -1,6 +1,8 @@
 //Control unit
 
+//instruction width
 `define INSTRUCTION_WIDTH 32
+//ALU control signal width
 `define ALU_CTRL_WIDTH 4
 
 //macros
@@ -39,7 +41,7 @@ module ctrl(
 					//MSB = 1 distinguishes between SUB and ADD
 					//MSB = 1 ==> SUB
 					//ALU control signal
-					alu_ctrl = {inst[31], inst[14:12]};
+					alu_ctrl = {inst[30], inst[14:12]};
 					//Register file write enable signal
 					reg_file_wr_en = 1'b1;
 					//Register file writeback select signal
