@@ -273,8 +273,9 @@ module ctrl(
 					//The immediate value is written to rd in case of LUI
 					//For AUIPC no ALU operation is to performed. Hence set to 'x'
 					if(inst[5]==1) begin
-						//ensure that the top two bits of alu_ctrl = 2'b11 to avoid conflict with other instructions					
-						alu_ctrl = 5'b11010;
+						//ensure that the top two bits of alu_ctrl = 2'b11 to avoid conflict with other instructions
+						//set the bottom 3 bits to be 0, to convey that it is the LUI instruction to the ALU					
+						alu_ctrl = 5'b11000;
 					end
 					
 					else begin
