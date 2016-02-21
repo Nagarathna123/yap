@@ -51,7 +51,7 @@ module ctrl(
 	(00) 8 bit value
 	(11) undefined
 	*/
-	output reg [2:0] d_mem_size,
+	output reg [1:0] d_mem_size,
 	//JAL instruction
 	output reg jal,
 	//JALR instruction
