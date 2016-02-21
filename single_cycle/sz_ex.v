@@ -111,14 +111,14 @@ module sz_ex(
 					//the immediate offset is specified as multiples of two bytes 
 					if(inst[14:13] == 2'b11) begin
 						sz_ex_val[0] = 1'b0;
-						sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:6]};
+						sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:8]};
 						sz_ex_val[31:13] = {(`OPERAND_WIDTH-13){1'b0}};
 					end
 					
 					//else perform sign extend
 					else begin
 						sz_ex_val[0] = 1'b0;
-						sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:6]};
+						sz_ex_val[12:1] = {inst[31], inst[7], inst[30:25], inst[11:8]};
 						sz_ex_val[31:13] = {(`OPERAND_WIDTH-13){inst[31]}};
 					end
 				end
@@ -142,8 +142,8 @@ module sz_ex(
 				end
 				 
 				default: begin
-					//set output to defult value (0)
-					sz_ex_val = {`OPERAND_WIDTH{1'b0}};
+					//set output to defult value to x (unknown)
+					sz_ex_val = {`OPERAND_WIDTH{1'bx}};
 				end
 			
 			endcase
@@ -151,8 +151,8 @@ module sz_ex(
 		end
 		
 		else begin
-			//set output to defult value (0)
-			sz_ex_val = {`OPERAND_WIDTH{1'b0}};
+			//set output to defult value to x (unknown)
+			sz_ex_val = {`OPERAND_WIDTH{1'bx}};
 		end
 		
 	end
