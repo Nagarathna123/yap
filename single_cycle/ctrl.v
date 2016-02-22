@@ -28,6 +28,11 @@ module ctrl(
 	bits 2 - 0 : ALU operation to be performed
 	bit 3 : Set to 1 when a subtract operation is to be performed
 	bit 4 : Set to 1 in case of branch instruction
+	
+	Note :- In order to uniquely convey the LUI and JALR instructions to the ALU,
+	bits 3 and 4 are set to 1, so that there is no conflict with other instructions
+	LUI : 5'b11000
+	JALR : 5'b11001
 	*/
 	output reg [(`ALU_CTRL_WIDTH-1):0] alu_ctrl,
 	//Register file write enable signal
@@ -268,11 +273,11 @@ module ctrl(
 					//no data is read from data memory
 					d_mem_rd_en = 1'b0;
 					//Data memory write enable signal
-					//Data is written to data memory
-					d_mem_wr_en = 1'b1;
+					//Data is not written to data memory
+					d_mem_wr_en = 1'b0;
 					//data memory size
-					//data is written to data memory
-					d_mem_size = inst[13:12];
+					//data is not written to data memory
+					d_mem_size = 2'bxx;
 					//JAL instruction
 					//not valid
 					jal = 1'b0;
